@@ -167,7 +167,7 @@ userRouter.route('/:id')
     .delete(deleteUser);
 
 app.use('/api/v1/tours',tourRouter);
-app.use('/api/v1/user',userRouter);
+app.use('/api/v1/users',userRouter);
     
 app.listen(port, ()=>{
     console.log(`Connected to port ${port}`);
