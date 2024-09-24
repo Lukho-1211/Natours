@@ -52,8 +52,16 @@ const tourSchema = new mongoose.Schema({
         select: false
     },
     startDates: [Date]
+},{
+    toJSON: { virtuals: true},//when out put as json
+    toObject: { virtuals: true}//when out put as object
 });
 
+//this method can also be implimented in controller, but not best practise
+//do not work eg (Tours.find({durationWeeks: 1}))
+tourSchema.virtual('durationWeeks').get(function(){//this function can only work on GET method
+    return this.duration / 7;
+})
 const Tour = mongoose.model('Tour', tourSchema);
 
 module.exports = Tour;
