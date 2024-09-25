@@ -1,4 +1,3 @@
-const { query } = require('express');
 const Tour = require('./../models/tourModel');
 const APIFeactures = require('./../utils/apiFeactures');
  
@@ -16,10 +15,11 @@ exports.getAllTours = async(req,res)=>{
             .sort()
             .limitFields()
             .pagination();
+        
+        // EXECUTE QUERY
         const tours = await feactures.query;
 
-        // EXECUTE QUERY
-        res.status(200).json({
+            res.status(200).json({
             status: 'success',
             result: tours.length,
             data: {
@@ -78,7 +78,7 @@ exports.UpdateTour = async(req,res)=>{
     const tour = await Tour.findByIdAndUpdate(req.params.id, req.body,
         {
           new: true,
-          runValidators: true// using validations from mangoose Model
+          runValidators: false// using validations from mangoose Model
         });
     res.status(200).json({
         status: 'success',
