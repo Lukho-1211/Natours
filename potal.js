@@ -30,15 +30,15 @@ var req = https.request(options, function (res) {
     });
 });
 
-var postData = JSON.stringify({
-    "messages": [
-        {
-            "destinations": [{"to":"27721172942"}],
-            "from": "447491163443",
-            "text": "This is a message from your APP. We just scanned your bank account. Relax you not Hacked awunamali (LOL)."
-        }
-    ]
-});
+// var postData = JSON.stringify({
+//     "messages": [
+//         {
+//             "destinations": [{"to":"27721172942"}],
+//             "from": "447491163443",
+//             "text": "This is a message from your APP. We just scanned your bank account. Relax you not Hacked awunamali (LOL)."
+//         }
+//     ]
+// });
 
 req.write(postData);
 
