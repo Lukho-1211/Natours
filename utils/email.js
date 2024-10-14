@@ -12,7 +12,7 @@ const sendEmail = async options =>{
     //         password: process.env.EMAIL_PASSWORD
     //     }
     // })
-    const TOKEN = "aae6004b2b9bb4ce4b865a75f07f923f";
+    const TOKEN = process.env.EMAIL_TOKEN;
 
     const transporter = nodemailer.createTransport(
       MailtrapTransport({
