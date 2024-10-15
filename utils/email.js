@@ -1,5 +1,6 @@
 const nodemailer = require('nodemailer');
 const { MailtrapTransport } = require("mailtrap");
+// or use https://portal.infobip.com/homepage for emai,sms 
 
 const sendEmail = async options =>{
     //1) Create transportor

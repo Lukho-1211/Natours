@@ -55,6 +55,15 @@ userSchema.pre('save', async function(next){
     next();
 });
 
+userSchema.pre('save', function(next){
+    if(!this.isModified('password') || this.isNew) return next();
+
+    this.passwordChangedAt= Date.now() - 1000;
+    next();
+})
+
+
+
 // This is a universal method[instent]. can be found everywhere
 // checks if encrypted entered password same as in the database encrypted password
 userSchema.methods.correctPassword = async function(candidatePassword, userPassword){
@@ -65,7 +74,7 @@ userSchema.methods.correctPassword = async function(candidatePassword, userPassw
 userSchema.methods.changedPasswordAfter = function(JWTTimestamp){
     if(this.passwordChangedAt){
         const changeTimestamp = parseInt(this.passwordChangedAt.getTime() / 1000, 10);
-        console.log(changeTimestamp, JWTTimestamp);
+        //console.log(changeTimestamp, JWTTimestamp);
         
         return JWTTimestamp < changeTimestamp; 
     }
