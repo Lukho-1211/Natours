@@ -22,7 +22,7 @@ const sendErrorDev = (err, res)=>{
         error: err,
         message: err.message,
         stack: err.stack
-    })
+    });
 }
 
 

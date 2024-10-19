@@ -16,11 +16,12 @@ const DB = process.env.MONGO_URL.replace(
     process.env.DATABASE_PASSWORD 
 );
 
-mongoose.connect(DB, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useCreateIndex: true,
-})
+// , {
+//     useNewUrlParser: true,
+//     useUnifiedTopology: true
+//     //useCreateIndex: true,
+// }
+mongoose.connect(DB)
 .then(()=>{ 
     console.log('DB connected successfully!');
 });
