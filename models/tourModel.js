@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify'); // Helps in taking Strings from url
 const validator = require('validator');
+//const User = require('./userModel');
 
 const tourSchema = new mongoose.Schema({
     name:{
@@ -56,7 +57,7 @@ const tourSchema = new mongoose.Schema({
     summary:{
         type: String,
         trim: true,
-        required: [true, 'A tour must have a description']
+        required: [true, 'A tour must have a summary']
     },
     discription:{
         type: String,
@@ -97,6 +98,12 @@ const tourSchema = new mongoose.Schema({
         description: String,
         day: Number
         }
+    ],
+    guides: [
+        {
+            type: mongoose.Schema.ObjectId,
+            ref: 'User'
+        }
     ]
 },
 {
@@ -121,8 +128,12 @@ tourSchema.pre('save', function(next){
     next();
 });
 
-// tourSchema.pre('save', function(next){
-//     console.log('Will save document...');
+    // How to embard Users collection to Tour collection
+    // database must have || guide: Array || to work
+    // This will before save run and hold the ID's from the User collection   
+// tourSchema.pre('save', async function(next){
+//     const guidePromisies = this.guide.map( async id => await User.findById(id));
+//     this.guide = await Promise.all(guidePromisies);
 //     next();
 // })
 
@@ -140,6 +151,14 @@ tourSchema.pre(/^find/, function(next){// run [all] findby...
     this.find({secretTour: { $ne: true}});
 
     this.start = Date.now();
+    next();
+});
+
+tourSchema.pre(/^find/, function(next){// run [all] findby...
+    this.populate({
+        path: 'guides',
+        select: '-__v -passwordChangedAt'
+    });
     next();
 })
 
