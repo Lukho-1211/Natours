@@ -119,6 +119,11 @@ tourSchema.virtual('durationWeeks').get(function(){//this function can only
     return this.duration / 7; // [this.] means this document
 })
 
+tourSchema.virtual('reviews',{
+    ref: 'Review', //referance to the model/document 
+    foreignField: 'tour', //where the Id is
+    localField: '_id' //curent do with the date id to foreignFlield
+})
 
         //DOCUMENT MIDDLEWARE:
 // DOCUMENT MIDDLEWARE: runs BEFORE .save() and create() is triggered
@@ -131,6 +136,7 @@ tourSchema.pre('save', function(next){
     // How to embard Users collection to Tour collection
     // database must have || guide: Array || to work
     // This will before save run and hold the ID's from the User collection   
+    
 // tourSchema.pre('save', async function(next){
 //     const guidePromisies = this.guide.map( async id => await User.findById(id));
 //     this.guide = await Promise.all(guidePromisies);
@@ -154,6 +160,7 @@ tourSchema.pre(/^find/, function(next){// run [all] findby...
     next();
 });
 
+    // this code helps to show the table-row with the same guides ID
 tourSchema.pre(/^find/, function(next){// run [all] findby...
     this.populate({
         path: 'guides',
