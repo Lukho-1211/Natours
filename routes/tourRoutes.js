@@ -4,10 +4,9 @@ const authController = require('../controllers/authController');
 const reviewRouter = require('../routes/reviewRoutes');
 
 const tourRouter = express.Router();
-// route('/:tourId/review').
-//             post(authController.protect
-//                 ,authController.restrictTo('user')
-//                 ,reviewController.creatReviews)
+
+    //This is a nested route [taking the tourId by params]
+    // tours/api/v1/766809/review then redirect to views/api/v1/ with tourId
 tourRouter.use('/:tourId/review', reviewRouter);
 
 

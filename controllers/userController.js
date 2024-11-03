@@ -1,6 +1,8 @@
 const User = require('./../models/userModel');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
+const factory = require('../controllers/handlerfactory');
+
  
 const filterObj = (obj, ...allowedFields) =>{
     const newObj = {};
@@ -11,45 +13,30 @@ const filterObj = (obj, ...allowedFields) =>{
 }
 
 
-exports.getAllUser = catchAsync( async(req,res)=>{
-    const user = await User.find();
-    res.status(200).json({
-        status: 'success',
-        results: user.length,
-        data: {
-            user
-        }
-    });
-});
+// exports.getAllUser = catchAsync( async(req,res)=>{
+//     const user = await User.find();
+//     res.status(200).json({
+//         status: 'success',
+//         results: user.length,
+//         data: {
+//             user
+//         }
+//     });
+// });
 
 exports.createUser = (req,res)=>{
     res.status(500).json({
         status: 'failed',
-        data: 'Method not implimented'
-    });
-}
-exports.getUser = (req,res)=>{
-    res.status(500).json({
-        status: 'failed',
-        data: 'Method not implimented'
-    });
-}
-exports.updateUser = (req,res)=>{
-    res.status(500).json({
-        status: 'failed',
-        data: 'Method not implimented'
-    });
-}
-exports.deleteUser = (req,res)=>{
-    res.status(500).json({
-        status: 'failed',
-        data: 'Method not implimented'
+        data: 'Method not implimented/ please use sigup instead'
     });
 }
 
+
+
+
 exports.UpdateMe = catchAsync( async(req,res,next)=>{
     if(req.body.password || req.body.passwordConfirm){
-        return next(new AppError('This rout is not for password update. Please use /update Password', 400));
+        return next(new AppError('This route is not for password update. Please use /update Password', 400));
     }
 
     //2) Filtered out unwanted fields names that are not allowed to be updated
@@ -81,3 +68,11 @@ exports.deleteMe = catchAsync( async(req,res,next)=>{
         }
     });
 })
+
+exports.getAllUser = factory.getAll(User);
+exports.getUser = factory.getOne(User);
+
+    // Do Not update password with this!!!!
+exports.updateUser = factory.UpdateOne(User);
+
+exports.deleteUser = factory.deleteOne(User);
