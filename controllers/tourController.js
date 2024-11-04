@@ -10,8 +10,6 @@ exports.aliasTopTours = (req,res,next)=>{
     next();
 }
 
-exports.getAllTours = factory.getAll(Tour);
-
 
 // exports.getTour = catchAsync(async (req,res, next)=>{
 //         const tour = await Tour.findById(req.params.id).populate('reviews');
@@ -113,6 +111,7 @@ exports.getMonthlyPlan = catchAsync(async(req,res) =>{
     });        
 });
 
+exports.getAllTours = factory.getAll(Tour);
 exports.getTour = factory.getOne(Tour, {path: 'reviews'});
 exports.creatTour = factory.createOne(Tour);
 exports.UpdateTour = factory.UpdateOne(Tour);

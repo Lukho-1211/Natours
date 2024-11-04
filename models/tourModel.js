@@ -111,6 +111,12 @@ const tourSchema = new mongoose.Schema({
     toObject: { virtuals: true}//when out put as object
 });
 
+
+    // Indexing helps with the performance of the database
+    // Helps not to visit all the doc everytime the query is done
+tourSchema.index({price: 1, ratingsAvarage: -1});
+tourSchema.index({slug: 1});
+
         //VIRTUAL MIDDLEWARE
 //this method can also be implimented in controller, but not best practise
 //do not work eg (Tours.find({durationWeeks: 1}))

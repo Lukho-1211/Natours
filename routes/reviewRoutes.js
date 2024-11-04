@@ -5,6 +5,8 @@ const authController = require('../controllers/authController');
                                     // For nested routes
 const reviewRoutes = express.Router({mergeParams: true});
 
+reviewRoutes.use(authController.protect);
+
     //getAllReviews can recieve tourId in params
 reviewRoutes.route('/')
             .get(reviewController.getAllReviews)
@@ -12,11 +14,14 @@ reviewRoutes.route('/')
                   ,authController.restrictTo('user')
                   ,reviewController.setToursUserId
                   ,reviewController.creatReviews);
-
+ 
 reviewRoutes.route('/:id')
             .get(reviewController.getReview)
-            .patch(reviewController.updateReview)
-            .delete(reviewController.deleteReview);
+            .patch(authController.restrictTo('user', 'admin'),
+             reviewController.updateReview)
+            .delete(authController.restrictTo('user', 'admin'),
+            reviewController.updateReview,
+            reviewController.deleteReview);
 
 
 module.exports = reviewRoutes;

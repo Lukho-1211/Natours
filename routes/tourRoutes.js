@@ -18,15 +18,21 @@ tourRouter.route('/top-5-cheap')
         , tourController.getAllTours);
 
 tourRouter.route('/montly-plan/:year')
-    .get(tourController.getMonthlyPlan);
+    .get(authController.protect,
+        authController.restrictTo('admin', 'lead-guide','guide'),
+        tourController.getMonthlyPlan);
 
 tourRouter.route('/')
-    .get(authController.protect ,tourController.getAllTours)
-    .post(tourController.creatTour);
+    .get(tourController.getAllTours)
+    .post(authController.protect,
+          authController.restrictTo('admin', 'lead-guide'),
+          tourController.creatTour);
 
 tourRouter.route('/:id')
     .get(tourController.getTour)
-    .patch(tourController.UpdateTour)
+    .patch(authController.protect,
+          authController.restrictTo('admin', 'lead-guide'),
+          tourController.UpdateTour)
     .delete(authController.protect, 
             authController.restrictTo('admin', 'lead-guide'), 
             tourController.deleteTour);

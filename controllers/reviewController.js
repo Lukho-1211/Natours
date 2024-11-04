@@ -42,6 +42,8 @@ const sendRespose = (status, res, reviews)=>{
 //     // }
 // })
 
+
+//[
 exports.setToursUserId = (req, res, next)=>{
     if(!req.body.tour) req.body.tour = req.params.tourId;
     if(!req.body.user) req.body.user = req.user.id;
@@ -49,6 +51,7 @@ exports.setToursUserId = (req, res, next)=>{
     next();
 }
 exports.creatReviews = factory.createOne(Review);
+//]
 
 exports.getAllReviews = factory.getAll(Review);
 exports.getReview = factory.getOne(Review);
