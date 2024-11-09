@@ -34,7 +34,8 @@ const tourSchema = new mongoose.Schema({
         type: Number,
         default: 4.5,
         min: [1, ' Ratings must be above 1.0'],
-        max: [5, ' Ratings must be below 5.0']
+        max: [5, ' Ratings must be below 5.0'],
+        set: val=> Math.round(val * 10)/10 // 4.66667  4.7
     },
     ratingsQuanity:{
         type: Number,
@@ -78,7 +79,7 @@ const tourSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-    locations: {
+    startLocation: {
         type:{
             type: String,
             default: 'Point',
@@ -88,7 +89,8 @@ const tourSchema = new mongoose.Schema({
         description: String,
         day: Number
     },
-    locations: [{
+    locations: [
+        {
         type:{
             type: String,
             default: 'Point',
@@ -116,6 +118,7 @@ const tourSchema = new mongoose.Schema({
     // Helps not to visit all the doc everytime the query is done
 tourSchema.index({price: 1, ratingsAvarage: -1});
 tourSchema.index({slug: 1});
+tourSchema.index({ startLocation: '2dsphere'});
 
         //VIRTUAL MIDDLEWARE
 //this method can also be implimented in controller, but not best practise
@@ -182,11 +185,11 @@ tourSchema.post(/^find/, function(docs, next){
 
 
         //AGGRIGATION MIDDLEWARE
-tourSchema.pre('aggregate', function(next){
-    this.pipeline().unshift({ $match: { secretTour: { $ne: true}}});
-    console.log(this.pipeline());
-    next();
-})
+// tourSchema.pre('aggregate', function(next){
+//     this.pipeline().unshift({ $match: { secretTour: { $ne: true}}});
+//     console.log(this.pipeline());
+//     next();
+// })
 
 
 const Tour = mongoose.model('Tour', tourSchema);

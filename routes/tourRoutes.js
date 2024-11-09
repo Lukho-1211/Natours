@@ -22,6 +22,16 @@ tourRouter.route('/montly-plan/:year')
         authController.restrictTo('admin', 'lead-guide','guide'),
         tourController.getMonthlyPlan);
 
+        // route for Geo special Query
+tourRouter.route('/tours-within/:distance/center/:latlng/unit/:unit')
+        .get(tourController.distanceWithin);
+
+        // route use Geo spcial Aggrication
+        //calculate distances of a tour from a certian point
+tourRouter.route('/distances/:latlng/unit/:unit')
+        .get(tourController.getDistance);
+
+
 tourRouter.route('/')
     .get(tourController.getAllTours)
     .post(authController.protect,

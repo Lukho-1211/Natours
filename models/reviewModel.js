@@ -32,6 +32,7 @@ const reviewSchema = new mongoose.Schema({
     toObject: { virtuals: true}//when out put as object
 });
 
+reviewSchema.index({ tour:1, user:1}, {unique: true});
 
     // this code helps to show the table-row with the same tour and user ID
 reviewSchema.pre(/^find/, function(next){
@@ -74,7 +75,7 @@ reviewSchema.statics.calcAverageRatings = async function(tourId){
         await Tour.findByIdAndUpdate(tourId, {
             ratingsQuanity: 0,
             ratingsAvarage: 4.5
-        })
+        })    
     }
 };
 
