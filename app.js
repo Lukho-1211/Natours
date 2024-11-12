@@ -25,8 +25,14 @@ app.set('views', path.join(__dirname, 'views')); // responsible for routes/pages
 app.use(express.static(path.join(__dirname, 'public')));
 
     //Set security HTTP headers
-app.use(helmet());
-
+//app.use(helmet()); 
+//app.use(helmet.crossOriginResourcePolicy({ policy: 'cross-origin' })); //npm i helmet@3.23.3
+app.use(
+    helmet({
+      crossOriginEmbedderPolicy: false,
+      // ...
+    })
+  );
     // Development logging
 if(process.env.NODE_ENV === 'development'){
     app.use(morgan('dev'));
