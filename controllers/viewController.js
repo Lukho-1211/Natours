@@ -21,7 +21,7 @@ exports.getTour = (req, res)=>{
     });
 };
 
-exports.getTourDetail = catchAsync( async(req,res)=>{
+exports.getTourDetail = catchAsync( async(req,res, next)=>{
     const tourName = req.params.slug;
     const tour = await Tour.findOne({slug:tourName}).populate({
         path: 'reviews',
@@ -35,4 +35,23 @@ exports.getTourDetail = catchAsync( async(req,res)=>{
         title: `${tour.name} Tour`,
         tour
     })
+})
+
+
+exports.getLoginForm = catchAsync( async(req,res)=>{
+    // const user = await User.findOne({
+    //     email: req.body.email,
+    //     password: req.body.password
+    // });
+
+    res
+    .status(200)
+    .set(
+        'Content-Security-Policy',
+        "connect-src 'self' https://cdnjs.cloudflare.com"
+    )
+    .render('login', {
+        title: 'Log into your account',
+    });
+
 })
