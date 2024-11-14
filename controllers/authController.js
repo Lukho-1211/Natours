@@ -6,6 +6,7 @@ const User = require('./../models/userModel');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
 const sendEmail = require('./../utils/email');
+const cookieParser = require('cookie-parser');
 
 
 
@@ -81,6 +82,8 @@ exports.protect = catchAsync( async(req, res, next)=>{
     let token;
     if(req.headers.authorization && req.headers.authorization.startsWith('Bearer')){
        token = req.headers.authorization.split(' ')[1];
+    }else if(req.cookie.jwt){
+        token = req.cookie.jwt;
     }
 
     if(!token){                                                              // 401 unAthorized

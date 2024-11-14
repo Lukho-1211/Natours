@@ -7,6 +7,7 @@ const mongoSenetize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
 const cors = require('cors');
+const cokieParser = require('cookie-parser');
 
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
@@ -51,6 +52,7 @@ app.use('/api',limiter);
 
     // Body paser, reading data from the body into req.body
 app.use(express.json({ limit: '10kb'}));
+app.use(cokieParser());
 
     //Data sanitization against NoSQL query injection
     // prevents from input attacks "email": {"$gt": ""},
@@ -71,6 +73,7 @@ app.use(
     // Test middleware
 app.use((req,res,next)=>{
     req.requestTime = new Date().toISOString();
+    console.log(req.cookies)
     next();
 })
 
