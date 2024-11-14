@@ -6,6 +6,7 @@ const helmet = require('helmet');
 const mongoSenetize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
+const cors = require('cors');
 
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
@@ -73,8 +74,9 @@ app.use((req,res,next)=>{
     next();
 })
 
-//Routes
+app.use(cors());
 
+//Routes
 app.use('/', viewRouter);
 app.use('/api/v1/tours',tourRouter);
 app.use('/api/v1/users',userRouter);
