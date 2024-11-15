@@ -82,8 +82,8 @@ exports.protect = catchAsync( async(req, res, next)=>{
     let token;
     if(req.headers.authorization && req.headers.authorization.startsWith('Bearer')){
        token = req.headers.authorization.split(' ')[1];
-    }else if(req.cookie.jwt){
-        token = req.cookie.jwt;
+    }else if(req.cookies.jwt){
+        token = req.cookies.jwt
     }
 
     if(!token){                                                              // 401 unAthorized
@@ -109,6 +109,33 @@ exports.protect = catchAsync( async(req, res, next)=>{
     next();
 });
 
+
+    // Only for rendered pages, no errors
+exports.isLoggIn = catchAsync( async(req, res, next)=>{
+    if(req.cookies.jwt){    
+            //1) Verification token    
+            const decoded = await promisify(jwt.verify)(req.cookies.jwt, process.env.JWT_SECRET);
+        
+            //2) Check if user exists in database
+            const currentUser = await User.findById(decoded.id.id || decoded.id);
+            if(!currentUser){
+                return next()
+            }
+            
+            //3) check if user changed password after the token was issused
+            if(currentUser.changedPasswordAfter(decoded.iat)){
+                return next();
+            }
+            
+            // There is a loggin user
+            //another way to send data to frontend
+            res.locals.user = currentUser; // be aware its [res.locals] not req.locals
+            return next();
+        }
+    next();
+});
+
+    
 // This is how to right a middleware that accepts parameters
 // the [...]roles means its an array
 exports.restrictTo = (...roles)=>{
