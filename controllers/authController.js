@@ -24,7 +24,7 @@ const sendCreateToken = (user, statusCode, res)=>{
             Date.now()+ process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
             ), 
         httpOnly: true
-    }
+    };
 
     if(process.env.NODE_ENV === 'production') cookieOptions.secure = true;
     // name of the cookie, value, options
@@ -41,6 +41,7 @@ const sendCreateToken = (user, statusCode, res)=>{
         }
     })
 }
+
 
 exports.signup = catchAsync(async (req,res, next)=>{
     //const newUser = await User.create(req.body);Wrong way of signing up
@@ -75,6 +76,16 @@ exports.login = catchAsync( async(req,res,next)=>{
     sendCreateToken(user, 200, res);
  
 });
+
+exports.logout = (req,res, next)=>{
+    res.cookie('jwt', 'loggedout', {
+        expires: new Date(Date.now() + 10 * 1000), //set the cookie to expire in 10sec
+        httpOnly: true
+    });
+    res.status(200).json({
+        status: 'success'
+    });
+}
 
 exports.protect = catchAsync( async(req, res, next)=>{
 
@@ -111,29 +122,33 @@ exports.protect = catchAsync( async(req, res, next)=>{
 
 
     // Only for rendered pages, no errors
-exports.isLoggIn = catchAsync( async(req, res, next)=>{
+exports.isLoggIn = async(req, res, next)=>{
     if(req.cookies.jwt){    
-            //1) Verification token    
-            const decoded = await promisify(jwt.verify)(req.cookies.jwt, process.env.JWT_SECRET);
-        
-            //2) Check if user exists in database
-            const currentUser = await User.findById(decoded.id.id || decoded.id);
-            if(!currentUser){
-                return next()
-            }
+            try {
+                    //1) Verification token    
+                const decoded = await promisify(jwt.verify)(req.cookies.jwt, process.env.JWT_SECRET);
             
-            //3) check if user changed password after the token was issused
-            if(currentUser.changedPasswordAfter(decoded.iat)){
+                //2) Check if user exists in database
+                const currentUser = await User.findById(decoded.id.id || decoded.id);
+                if(!currentUser){
+                    return next()
+                }
+                
+                //3) check if user changed password after the token was issused
+                if(currentUser.changedPasswordAfter(decoded.iat)){
+                    return next();
+                }
+                
+                // There is a loggin user
+                //another way to send data to frontend
+                res.locals.user = currentUser; // be aware its [res.locals] not req.locals
+                return next();
+            } catch (error) {
                 return next();
             }
-            
-            // There is a loggin user
-            //another way to send data to frontend
-            res.locals.user = currentUser; // be aware its [res.locals] not req.locals
-            return next();
         }
     next();
-});
+};
 
     
 // This is how to right a middleware that accepts parameters
