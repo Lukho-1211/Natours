@@ -40,11 +40,7 @@ exports.getTourDetail = catchAsync( async(req,res, next)=>{
 })
 
 
-exports.getLoginForm = catchAsync( async(req,res)=>{
-    // const user = await User.findOne({
-    //     email: req.body.email,
-    //     password: req.body.password
-    // });
+exports.getLoginForm = (req,res)=>{
 
     res
     .status(200)
@@ -56,4 +52,16 @@ exports.getLoginForm = catchAsync( async(req,res)=>{
         title: 'Log into your account',
     });
 
-})
+}
+
+exports.getAccount= (req, res)=>{
+    res
+    .status(200)
+    .set(
+        'Content-Security-Policy',
+        "connect-src 'self' https://cdnjs.cloudflare.com"
+    )
+    .render('account', {
+        title: 'Your Accout Details',
+    });
+}

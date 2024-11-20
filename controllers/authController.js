@@ -117,6 +117,8 @@ exports.protect = catchAsync( async(req, res, next)=>{
 
    // Grant Access to the next protected route
    req.user = currentUser;
+   res.locals.user = currentUser; // be aware its [res.locals] not req.locals
+
     next();
 });
 
@@ -141,6 +143,7 @@ exports.isLoggIn = async(req, res, next)=>{
                 
                 // There is a loggin user
                 //another way to send data to frontend
+                req.user = currentUser;
                 res.locals.user = currentUser; // be aware its [res.locals] not req.locals
                 return next();
             } catch (error) {
