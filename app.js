@@ -52,6 +52,7 @@ app.use('/api',limiter);
 
     // Body paser, reading data from the body into req.body
 app.use(express.json({ limit: '10kb'}));
+app.use(express.urlencoded( {extended: true, limit: '10kb'}) );
     // reading data from the cookie into req.cookie [frontend]
 app.use(cookieParser());
 

@@ -10,5 +10,10 @@ viewRouter.get('/',authController.isLoggIn, viewController.getOverview);
 viewRouter.get('/tour/:slug',authController.isLoggIn, viewController.getTourDetail);
 viewRouter.get('/me', authController.protect, viewController.getAccount);
 
+viewRouter.post('/submit-user-data',authController.protect, viewController.updateUserData);
+
+
+
+
 
 module.exports = viewRouter;

@@ -20,7 +20,7 @@ export const login = async(email, password) => {
         }, 1500);  //1,5 milliseconds
     }
     } catch (err) {
-        showAlert('error', 'Logged in successfully!');
+        showAlert('error', 'Password or email is wrong, Please try again!');
     }
     
 };

@@ -65,3 +65,24 @@ exports.getAccount= (req, res)=>{
         title: 'Your Accout Details',
     });
 }
+
+exports.updateUserData = catchAsync( async(req, res, next)=>{
+    const updateUser = await User.findByIdAndUpdate(req.user.id, {
+        name: req.body.name,
+        email: req.body.email
+    },
+    {
+        new: true,
+        runValidators: true
+    });
+
+    res
+    .status(200)
+    .render('account', {
+        title: 'Your Accout Details',
+        user: updateUser
+    });
+
+    
+
+})
