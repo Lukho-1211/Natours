@@ -13,7 +13,4 @@ viewRouter.get('/me', authController.protect, viewController.getAccount);
 viewRouter.post('/submit-user-data',authController.protect, viewController.updateUserData);
 
 
-
-
-
 module.exports = viewRouter;

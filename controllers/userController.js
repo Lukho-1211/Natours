@@ -37,12 +37,18 @@ exports.getMe = (req,res, next)=>{
     next();
 }
 
+exports.justProof = (req, res, next)=>{
+    console.log('UpdateMe should be comming up working');
+    next();
+}
+
  
 exports.UpdateMe = catchAsync( async(req,res,next)=>{
+    console.log('UpdateMe works from userController');
     if(req.body.password || req.body.passwordConfirm){
         return next(new AppError('This route is not for password update. Please use /update Password', 400));
     }
-
+ 
     //2) Filtered out unwanted fields names that are not allowed to be updated
     const filteredBody = filterObj(req.body, 'name', 'email');
     //const {name, email} = req.body; [allow work]
@@ -63,6 +69,7 @@ exports.UpdateMe = catchAsync( async(req,res,next)=>{
 })
 
 exports.deleteMe = catchAsync( async(req,res,next)=>{
+    console.log('this is id');
     await User.findByIdAndUpdate(req.user.id, {active: false});
 
     res.status(204).json({

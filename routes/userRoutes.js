@@ -13,13 +13,13 @@ userRouter.patch('/resetPassword/:token', authController.resetPassword);
 // All routes after this are protect because of the middleware
 userRouter.use(authController.protect);
 
-userRouter.patch('/updatePassword',
+userRouter.patch('/updatePassword', userController.justProof,
                 authController.updatePassword);
 userRouter.get('/me',
                 userController.getMe,
                 userController.getUser);
-userRouter.delete('/deleteMe', userController.deleteMe);
 userRouter.patch('/updateMe', userController.UpdateMe);
+userRouter.delete('/deleteMe', userController.deleteMe);
 
 
 // Only admin are allowed to do all thw below functions

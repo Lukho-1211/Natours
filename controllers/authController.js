@@ -100,10 +100,11 @@ exports.protect = catchAsync( async(req, res, next)=>{
     if(!token){                                                              // 401 unAthorized
         return next(new AppError('You are not loged in! Please login to access this page', 401));
     }
+
 //2) Verification token
 // can also do a try catch here
     const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
-    console.log(decoded.id);
+
 //3) Check if user exists in database
     const currentUser = await User.findById(decoded.id.id || decoded.id);
     if(!currentUser){
@@ -118,7 +119,6 @@ exports.protect = catchAsync( async(req, res, next)=>{
    // Grant Access to the next protected route
    req.user = currentUser;
    res.locals.user = currentUser; // be aware its [res.locals] not req.locals
-
     next();
 });
 
@@ -231,7 +231,7 @@ exports.resetPassword = catchAsync( async(req,res,next)=>{
 exports.updatePassword = catchAsync( async(req,res,next)=>{
     //1) Get user from collection
     const Id = req.user.id;
-    //console.log(`Let me see you`);
+    console.log(`updatMe works in authController`);
     const user = await User.findById(Id).select('+password');
 
     //2)check if current posted user is correct
