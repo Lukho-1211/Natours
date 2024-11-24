@@ -6,6 +6,7 @@ const User = require('./../models/userModel');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
 const sendEmail = require('./../utils/email');
+const cookieParser = require('cookie-parser');
 
 
 
@@ -23,7 +24,7 @@ const sendCreateToken = (user, statusCode, res)=>{
             Date.now()+ process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
             ), 
         httpOnly: true
-    }
+    };
 
     if(process.env.NODE_ENV === 'production') cookieOptions.secure = true;
     // name of the cookie, value, options
@@ -40,6 +41,7 @@ const sendCreateToken = (user, statusCode, res)=>{
         }
     })
 }
+
 
 exports.signup = catchAsync(async (req,res, next)=>{
     //const newUser = await User.create(req.body);Wrong way of signing up
@@ -75,21 +77,34 @@ exports.login = catchAsync( async(req,res,next)=>{
  
 });
 
+exports.logout = (req,res, next)=>{
+    res.cookie('jwt', 'loggedout', {
+        expires: new Date(Date.now() + 10 * 1000), //set the cookie to expire in 10sec
+        httpOnly: true
+    });
+    res.status(200).json({
+        status: 'success'
+    });
+}
+
 exports.protect = catchAsync( async(req, res, next)=>{
 
 //1) Get token and check if its there/exist
     let token;
     if(req.headers.authorization && req.headers.authorization.startsWith('Bearer')){
        token = req.headers.authorization.split(' ')[1];
+    }else if(req.cookies.jwt){
+        token = req.cookies.jwt
     }
 
     if(!token){                                                              // 401 unAthorized
         return next(new AppError('You are not loged in! Please login to access this page', 401));
     }
+
 //2) Verification token
 // can also do a try catch here
     const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
-    console.log(decoded.id);
+
 //3) Check if user exists in database
     const currentUser = await User.findById(decoded.id.id || decoded.id);
     if(!currentUser){
@@ -103,9 +118,42 @@ exports.protect = catchAsync( async(req, res, next)=>{
 
    // Grant Access to the next protected route
    req.user = currentUser;
+   res.locals.user = currentUser; // be aware its [res.locals] not req.locals
     next();
 });
 
+
+    // Only for rendered pages, no errors
+exports.isLoggIn = async(req, res, next)=>{
+    if(req.cookies.jwt){    
+            try {
+                    //1) Verification token    
+                const decoded = await promisify(jwt.verify)(req.cookies.jwt, process.env.JWT_SECRET);
+            
+                //2) Check if user exists in database
+                const currentUser = await User.findById(decoded.id.id || decoded.id);
+                if(!currentUser){
+                    return next()
+                }
+                
+                //3) check if user changed password after the token was issused
+                if(currentUser.changedPasswordAfter(decoded.iat)){
+                    return next();
+                }
+                
+                // There is a loggin user
+                //another way to send data to frontend
+                req.user = currentUser;
+                res.locals.user = currentUser; // be aware its [res.locals] not req.locals
+                return next();
+            } catch (error) {
+                return next();
+            }
+        }
+    next();
+};
+
+    
 // This is how to right a middleware that accepts parameters
 // the [...]roles means its an array
 exports.restrictTo = (...roles)=>{
@@ -183,7 +231,7 @@ exports.resetPassword = catchAsync( async(req,res,next)=>{
 exports.updatePassword = catchAsync( async(req,res,next)=>{
     //1) Get user from collection
     const Id = req.user.id;
-    //console.log(`Let me see you`);
+    console.log(`updatMe works in authController`);
     const user = await User.findById(Id).select('+password');
 
     //2)check if current posted user is correct
