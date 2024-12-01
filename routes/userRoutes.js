@@ -13,12 +13,16 @@ userRouter.patch('/resetPassword/:token', authController.resetPassword);
 // All routes after this are protect because of the middleware
 userRouter.use(authController.protect);
 
-userRouter.patch('/updatePassword', userController.justProof,
+userRouter.patch('/updatePassword',
                 authController.updatePassword);
 userRouter.get('/me',
                 userController.getMe,
                 userController.getUser);
-userRouter.patch('/updateMe', userController.UpdateMe);
+userRouter.patch('/updateMe',
+                   userController.uploadUserPhoto,
+                   userController.resizeUserPhoto, 
+                   userController.UpdateMe);
+                   
 userRouter.delete('/deleteMe', userController.deleteMe);
 
 
@@ -26,8 +30,7 @@ userRouter.delete('/deleteMe', userController.deleteMe);
 userRouter.use(authController.restrictTo('admin'));
 
 userRouter.route('/')
-    .get(userController.getAllUser)
-    .post(userController.createUser);
+    .get(userController.getAllUser);
 
 userRouter.route('/:id')
     .get(userController.getUser)
