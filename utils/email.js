@@ -1,54 +1,60 @@
 const nodemailer = require('nodemailer');
-const { MailtrapTransport } = require("mailtrap");
+const pug = require('pug');
+const htmlToText = require('html-to-text');
+//const { MailtrapTransport } = require("mailtrap");
 // or use https://portal.infobip.com/homepage for emai,sms 
 
-const sendEmail = async options =>{
-    //1) Create transportor
+module.exports = class Email {
+    constructor(user, url){
+        this.to= user.email;
+        this.firstName= user.name.split(' ')[0];
+        this.url= url;
+        this.from= `Lukho Spambo <${process.env.EMAIL_FROM}>`;
+    }
 
-    // const transporter = nodemailer.createTransport({
-    //     host: process.env.EMAIL_HOST,
-    //     port: process.env.EMAIL_PORT,
-    //     auth: { 
-    //         user: process.env.EMAIL_USERNAME,
-    //         password: process.env.EMAIL_PASSWORD
-    //     }
-    // })
-    const TOKEN = process.env.EMAIL_TOKEN;
+newTransport() {
+    if(process.env.NODE_ENV === 'production'){
+        //sengrid
+        return 1;
+    }
 
-    const transporter = nodemailer.createTransport(
-      MailtrapTransport({
-        token: TOKEN,
-        testInboxId: 3203522,
-      })
+    return nodemailer.createTransport({
+        host: process.env.EMAIL_HOST,
+        port: process.env.EMAIL_PORT,
+        auth: { 
+            user: process.env.EMAIL_USERNAME,
+            pass: process.env.EMAIL_PASSWORD
+        }
+    });
+}
+
+async send(template, subject) {
+    // 1) render HTML based on a pug template
+    const html = pug.renderFile(
+        `${__dirname}/../views/emails/${template}.pug`,
+        {
+            firstName: this.firstName,
+            url: this.url,
+            subject
+        }
     );
-    
-    //2) Difine the email options
 
-    // const mailOptions = {
-    //     from: 'Lukho Spambo <aluluthospambo@gmail.com>',
-    //     to: options.email,
-    //     subject: options.subject,
-    //     text: options.message
-    // }
-
+    // 2) Define email options
     const mailOptions = {
-        from: 'Lukho Spambo <aluluthospambo@gmail.com>',
-        to: options.email,
-        subject: options.subject,
-        text: options.message,
-        category: "Integration Test",
-        sandbox: true
-      }
+        from: this.from,
+        to: this.to,
+        subject,
+        html,
+        text: htmlToText.fromString(html),
+      };
 
-    //3) Actually send the email
-    await transporter.sendMail(mailOptions);
+    // 3) Create a transport and send email
+    await this.newTransport().sendMail(mailOptions);
+}
+
+    async sendWelcome(){
+        await this.send('welcome', 'Welcome to the Natours Family!');
+    }
 
 };
 
-
-
-
-
-
-
-module.exports = sendEmail;

@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const User = require('./../models/userModel');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
-const sendEmail = require('./../utils/email');
+const Email = require('./../utils/email');
 const cookieParser = require('cookie-parser');
 
 
@@ -53,6 +53,10 @@ exports.signup = catchAsync(async (req,res, next)=>{
        // passwordChangedAt: req.body.passwordChangedAt,
         role: req.body.role
     });
+
+    const url = `${req.protocol}://${req.get('host')}/me`;
+    await new Email(newUser, url).sendWelcome();
+
 // JSON web tokken are made up of 3 velues  [PAYLOAD] + [SECRET] + [EXPIRY DATE]         
     sendCreateToken(newUser, 201, res);
 });
@@ -184,11 +188,11 @@ exports.forgotPassword = catchAsync( async(req,res,next)=>{
                 forget ignore this email`;
     const subject = 'Your reset token (valid for 10 min)';
     try {
-        await sendEmail({
-            email: user.email,   // same as req.body.email
-            subject,
-            message
-        });
+        // await sendEmail({
+        //     email: user.email,   // same as req.body.email
+        //     subject,
+        //     message
+        // });
 
         res.status(200).json({
             status: 'success', 
