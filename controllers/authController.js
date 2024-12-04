@@ -54,7 +54,7 @@ exports.signup = catchAsync(async (req,res, next)=>{
         role: req.body.role
     });
 
-    const url = `${req.protocol}://${req.get('host')}/me`;
+    const url = `${req.protocol}://${req.get('host')}/me`;//http://127.0.0.1:3000/me
     await new Email(newUser, url).sendWelcome();
 
 // JSON web tokken are made up of 3 velues  [PAYLOAD] + [SECRET] + [EXPIRY DATE]         
@@ -182,18 +182,10 @@ exports.forgotPassword = catchAsync( async(req,res,next)=>{
     await user.save({ validateBeforeSave: false });
  
     //3) Send it to user's email
-    const resetURL = `${req.protocol}://${req.get('host')}/api/v1/users/resetPassword/${resetToken}`;
-    const message = `Forgort your password? Submit a PATCH request with your new password and 
-                and confirm password to ${resetURL}\nIf you do did not forget password, please 
-                forget ignore this email`;
-    const subject = 'Your reset token (valid for 10 min)';
     try {
-        // await sendEmail({
-        //     email: user.email,   // same as req.body.email
-        //     subject,
-        //     message
-        // });
+        const resetURL = `${req.protocol}://${req.get('host')}/api/v1/users/resetPassword/${resetToken}`;
 
+        await new Email(user, resetURL).sendPasswordRest();
         res.status(200).json({
             status: 'success', 
             message: 'Token sent to email'
